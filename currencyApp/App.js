@@ -7,7 +7,9 @@ import {
     View,
     TextInput,
     TouchableOpacity,
+    
 } from "react-native"
+import Snackbar from "react-native-snackbar";
 const currencyPerLira={
     DOLLAR: 0.052,
     EURO: 0.046,
@@ -23,26 +25,48 @@ const App=()=>
 {
     const[inputValue, setInputValue]=useState(0);
     const[resultValue,setResultValue]=useState(0);
+    const buttonPressed=(currency)=>
+    {
+        if(!inputValue)
+        {
+            Snackbar.show({
+                text:"Please enter a value",
+                duration:Snackbar.LENGTH_SHORT,
+                backgroundColor:"#625C5C",
+                textColor:"#FFFFFF",
+
+            });
+        }
+        let result = parseFloat(inputValue)*currencyPerLira[currency];
+        setResultValue(result.toFixed(2));
+    }
     return(
         <>
-            <ScrollView backgroundColor="#f2d2c8">
+            <ScrollView backgroundColor="#f2d2c8"
+            keyboardShouldPersistTaps="handled"
+            contentInsetAdjustmentBehavior="automatic"
+            >
                 <SafeAreaView style= {styles.container}>
                     <View style={styles.resultContainer}>
                     <Text style={styles.resultVal}>
-                        Result
+                        {resultValue}
                     </Text>
                     </View>
                     <View style={styles.inputContainer}>
                         <TextInput style={styles.inputVal} 
                         keyboardType="numeric" 
                         placeholder="Enter Value"
-                        placeholderTextColor="#a29c74">
-
+                        placeholderTextColor="#a29c74"
+                        value={inputValue}
+                        onChangeText={(inputValue)=>setInputValue(inputValue)}>
+                            
                         </TextInput>
                     </View>
                     <View style={styles.convertButtonContainer}>
-                        {Object.keys(currencyPerLira).map((currency)=>(<TouchableOpacity>
-                            <Text style={styles.temp}>
+                        {Object.keys(currencyPerLira).map((currency)=>(<TouchableOpacity key={currency} style={styles.converterButton} onPress={buttonPressed(cu
+                        )
+                        }>
+                            <Text style={styles.convertButtonText}>
                                 {currency}
                             </Text>
                         </TouchableOpacity>))}
@@ -69,6 +93,14 @@ const styles=StyleSheet.create({
         textAlign:"center",
         color:"#FFFFFF",
     },
+    converterButton:{
+        alignItems:"center",
+        justifyContent:"center",
+        height:100,
+        backgroundColor:"#98c9cc",
+        width:"33.3%",
+        marginTop:5,
+    },
     inputContainer:{
         height: 70,
         marginTop:10,
@@ -87,7 +119,9 @@ const styles=StyleSheet.create({
         flexWrap:"wrap",
         marginTop:10,
     },
-    temp:{
-        color:"#FFFFFF"
+    convertButtonText:{
+        color:"#FFFFFF",
+        fontSize:15,
+        fontWeight: "bold",
     }
 })
